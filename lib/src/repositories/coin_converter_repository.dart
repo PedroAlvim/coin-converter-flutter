@@ -1,11 +1,11 @@
 import 'package:coin_converter/src/network/request/request_result.dart';
+import 'package:coin_converter/src/network/settings/network_settings.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
 class CoinConverterRepository {
   final _dio = Dio();
   final _logger = Logger();
-
 
   static double? cachedConverter;
 
@@ -19,7 +19,7 @@ class CoinConverterRepository {
 
     try {
       final response = await _dio
-          .get("https://economia.awesomeapi.com.br/json/last/USD-BRL");
+          .get(NetworkSettings.getCoinConverter("USD-BRL"));
 
       var statusCode = response.statusCode;
 
@@ -41,5 +41,9 @@ class CoinConverterRepository {
     }
 
     return RequestResult(successful: false);
+  }
+
+ void clearCache() {
+    cachedConverter = null;
   }
 }
