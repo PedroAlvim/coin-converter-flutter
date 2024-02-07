@@ -1,5 +1,6 @@
 import 'package:coin_converter/src/network/request/request_result.dart';
 import 'package:coin_converter/src/network/settings/network_settings.dart';
+import 'package:coin_converter/src/ui/widget/card/info_card.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
@@ -9,28 +10,34 @@ class CoinConverterRepository {
 
   static double? cachedConverter;
 
-  Future<RequestResult<double>> getCoinValue(double amount) async {
+  Future<RequestResult<String>> getCoinValue(double amount, Mode mode) async {
     if (cachedConverter != null) {
+      double convertedValue = amount * cachedConverter!;
+
       return RequestResult(
         successful: true,
-        data: amount * cachedConverter!,
+        data: convertedValue.toStringAsFixed(2),
       );
     }
 
     try {
-      final response = await _dio
-          .get(NetworkSettings.getCoinConverter("USD-BRL"));
+      final response =
+          await _dio.get(NetworkSettings.getCoinConverter(mode.text));
 
       var statusCode = response.statusCode;
 
       if (statusCode == 200) {
-        final converterValue = double.parse(response.data["USDBRL"]["high"]);
+        String key = mode == Mode.usdBrl ? "USDBRL" : "BRLUSD";
+
+        final converterValue = double.parse(response.data[key]["high"]);
 
         cachedConverter = converterValue;
 
-       return RequestResult(
+        double convertedValue = amount * converterValue;
+
+        return RequestResult(
           successful: true,
-          data: amount * converterValue,
+          data: convertedValue.toStringAsFixed(2)
         );
       }
 
@@ -43,7 +50,7 @@ class CoinConverterRepository {
     return RequestResult(successful: false);
   }
 
- void clearCache() {
+  void clearCache() {
     cachedConverter = null;
   }
 }
