@@ -5,10 +5,14 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
 class CoinConverterRepository {
-  final _dio = Dio();
+  late Dio _dio;
   final _logger = Logger();
 
   static double? cachedConverter;
+
+  CoinConverterRepository({Dio? dio}) {
+    _dio = dio ?? Dio();
+  }
 
   Future<RequestResult<String>> getCoinValue(double amount, Mode mode) async {
     if (cachedConverter != null) {
@@ -36,9 +40,7 @@ class CoinConverterRepository {
         double convertedValue = amount * converterValue;
 
         return RequestResult(
-          successful: true,
-          data: convertedValue.toStringAsFixed(2)
-        );
+            successful: true, data: convertedValue.toStringAsFixed(2));
       }
 
       _logger.e("Failed to get conversion value. StatusCode: $statusCode",

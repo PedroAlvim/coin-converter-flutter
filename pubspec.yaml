@@ -16,10 +16,12 @@ dependencies:
   dio: ^5.4.0
   logger: ^1.1.0
   flutter_masked_text2: ^0.9.1
+  mockito: ^5.4.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner:
 
   flutter_lints: ^2.0.0
 
